@@ -1,0 +1,558 @@
+:root {
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  color: #111827;
+  background: #f9fafb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: #111827;
+  color: #f9fafb;
+}
+
+.nav {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.nav a {
+  color: #f9fafb;
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+}
+
+.nav a:hover {
+  background: #374151;
+}
+
+.main {
+  padding: 1.5rem;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: #ffffff;
+}
+
+.error {
+  color: #b91c1c;
+}
+
+.game-page {
+  max-width: 980px;
+}
+
+.game-toolbar {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0.75rem 0;
+}
+
+.game-toolbar button {
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+  background: #1f2937;
+  color: #f9fafb;
+}
+
+.game-toolbar button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.save-message {
+  min-height: 1.25rem;
+  margin: 0.2rem 0 0.6rem;
+  color: #0b6d3c;
+}
+
+.runtime-notice {
+  margin: 0.15rem 0 0.5rem;
+  font-weight: 700;
+  color: #1d4ed8;
+}
+
+.hud {
+  display: flex;
+  gap: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  background: #ffffff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  font-size: 1.05rem;
+}
+
+.hud-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.hud-theme {
+  font-size: 0.85em;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.viewport {
+  position: relative;
+  width: 900px;
+  max-width: 100%;
+  height: 360px;
+  border: 2px solid #111827;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: linear-gradient(to bottom, var(--sky-top), var(--sky-bottom) 68%, var(--grass-color) 68%);
+}
+
+.world {
+  position: absolute;
+  height: 100%;
+  will-change: transform;
+}
+
+.ground {
+  position: absolute;
+  height: 52px;
+  background: linear-gradient(#8f6138, var(--ground-color));
+  box-shadow: inset 0 8px 0 rgb(255 255 255 / 12%);
+  border-top: 6px solid var(--grass-color);
+  z-index: 5;
+}
+
+.platform {
+  position: absolute;
+  border-radius: 8px;
+  background: linear-gradient(#c48747, var(--platform-color));
+  box-shadow: inset 0 4px 0 rgb(255 255 255 / 20%);
+  border-top: 4px solid var(--grass-color);
+}
+
+.platform-moving {
+  outline: 2px solid rgb(255 255 255 / 35%);
+  animation: platform-glow 1.2s ease-in-out infinite;
+}
+
+.pit {
+  position: absolute;
+  height: 52px;
+  border-radius: 0 0 12px 12px;
+  background: radial-gradient(circle at 50% 30%, #1f2937, #020617 70%);
+  box-shadow: inset 0 7px 10px rgb(0 0 0 / 45%);
+}
+
+.player {
+  position: absolute;
+  border-radius: 12px 12px 6px 6px;
+  background: #ef4444;
+  border: 2px solid #111827;
+  transform-origin: center bottom;
+  --face: 1;
+  transform: scaleX(var(--face));
+  box-shadow: inset -4px -4px 0 rgb(0 0 0 / 20%);
+  z-index: 10;
+}
+
+.player::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 14px;
+  background: #3b82f6;
+  border-radius: 0 0 4px 4px;
+  border-top: 2px solid #111827;
+}
+
+.player::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  right: -6px;
+  width: 14px;
+  height: 6px;
+  border-radius: 4px;
+  background: #ef4444;
+  border: 2px solid #111827;
+}
+
+.player-eye {
+  position: absolute;
+  right: 2px;
+  top: 6px;
+  width: 6px;
+  height: 8px;
+  border-radius: 999px;
+  background: #111827;
+  z-index: 2;
+}
+
+.player-eye::after {
+  content: "";
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  width: 2px;
+  height: 3px;
+  background: white;
+  border-radius: 50%;
+}
+
+.player.is-right {
+  --face: 1;
+}
+
+.player.is-left {
+  --face: -1;
+}
+
+.player.is-running {
+  animation: player-run 0.32s steps(2) infinite;
+}
+
+.player.is-idle {
+  animation: player-idle 1s ease-in-out infinite;
+}
+
+.player.is-jumping {
+  animation: player-jump 0.28s ease-in-out infinite;
+}
+
+.enemy {
+  position: absolute;
+  border-radius: 10px;
+  border: 2px solid #111827;
+  transform-origin: center bottom;
+}
+
+.enemy::before,
+.enemy::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #111827;
+}
+
+.enemy::before {
+  left: 5px;
+}
+
+.enemy::after {
+  right: 5px;
+}
+
+.enemy-goomba {
+  background: linear-gradient(#f59e0b, #b45309);
+  animation: enemy-walk 0.5s steps(2) infinite;
+}
+
+.enemy-bat {
+  background: linear-gradient(#a78bfa, #6d28d9);
+  border-radius: 12px 12px 5px 5px;
+  animation: enemy-fly 0.45s ease-in-out infinite;
+}
+
+.enemy-bat::before,
+.enemy-bat::after {
+  top: -2px;
+  width: 8px;
+  height: 8px;
+  background: #7c3aed;
+  border-radius: 2px 8px 2px 8px;
+}
+
+.enemy-defeated {
+  animation: enemy-squish 0.3s ease-out forwards;
+}
+
+@keyframes enemy-squish {
+  0% { transform: scale(1, 1); opacity: 1; }
+  100% { transform: scale(1.5, 0.2) translateY(20px); opacity: 0; }
+}
+
+.scenery-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.cloud {
+  position: absolute;
+  width: 60px;
+  height: 20px;
+  background: white;
+  border-radius: 20px;
+  opacity: 0.8;
+}
+
+.cloud::before {
+  content: "";
+  position: absolute;
+  top: -15px;
+  left: 10px;
+  width: 30px;
+  height: 30px;
+  background: white;
+  border-radius: 50%;
+}
+
+.cloud::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 50%;
+}
+
+.bush {
+  position: absolute;
+  width: 80px;
+  height: 30px;
+  background: #22c55e;
+  border-radius: 30px 30px 0 0;
+  border: 2px solid #14532d;
+  border-bottom: none;
+}
+
+.bush::before {
+  content: "";
+  position: absolute;
+  top: -15px;
+  left: 15px;
+  width: 30px;
+  height: 30px;
+  background: #22c55e;
+  border-radius: 50%;
+  border: 2px solid #14532d;
+  border-bottom: none;
+  clip-path: polygon(-10% -10%, 110% -10%, 110% 100%, -10% 100%);
+}
+
+.bush::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  right: 15px;
+  width: 24px;
+  height: 24px;
+  background: #22c55e;
+  border-radius: 50%;
+  border: 2px solid #14532d;
+  border-bottom: none;
+}
+
+.coin {
+  position: absolute;
+  width: 16px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fbbf24;
+  border: 2px solid #b45309;
+  box-shadow: inset -2px -2px 0 #d97706, inset 2px 2px 0 #fde68a;
+  animation: coin-spin 1s linear infinite;
+  z-index: 6;
+}
+
+.coin-collected {
+  animation: coin-collect 0.4s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes coin-collect {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-40px) scale(1.5); opacity: 0; }
+}
+
+@keyframes coin-spin {
+  0% { transform: scaleX(1); }
+  50% { transform: scaleX(0.2); }
+  100% { transform: scaleX(1); }
+}
+
+.goal {
+  position: absolute;
+  width: 8px;
+  height: 160px;
+  background: linear-gradient(90deg, #d1d5db, #9ca3af);
+  border: 2px solid #111827;
+  border-radius: 4px;
+  z-index: 5;
+}
+
+.goal::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 40px;
+  height: 30px;
+  background: #22c55e;
+  border: 2px solid #111827;
+  border-radius: 2px;
+  transform-origin: left center;
+  animation: flag-wave 1.5s ease-in-out infinite;
+  transition: top 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.goal-complete::after {
+  top: 126px;
+}
+
+@keyframes flag-wave {
+  0%, 100% { transform: skewY(0deg); }
+  50% { transform: skewY(-10deg); }
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  background: rgb(0 0 0 / 52%);
+  color: #ffffff;
+  text-align: center;
+  padding: 1rem;
+}
+
+.overlay button {
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+}
+
+.status-line {
+  margin-top: 0.5rem;
+}
+
+.runtime-log-panel {
+  margin-top: 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  background: #ffffff;
+  padding: 0.6rem 0.75rem;
+}
+
+.runtime-log-panel h4 {
+  margin: 0 0 0.4rem;
+  font-size: 0.95rem;
+}
+
+.runtime-log-panel ul {
+  margin: 0;
+  padding-left: 1rem;
+  max-height: 170px;
+  overflow: auto;
+}
+
+.runtime-log-panel li {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.78rem;
+  line-height: 1.25rem;
+}
+
+.floating-text {
+  position: absolute;
+  color: #fbbf24;
+  font-weight: 900;
+  font-size: 1.25rem;
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+  pointer-events: none;
+  z-index: 20;
+}
+
+@keyframes player-run {
+  0% { transform: translateY(0) scaleX(var(--face)) rotate(0deg); }
+  25% { transform: translateY(-3px) scaleX(var(--face)) rotate(5deg); }
+  50% { transform: translateY(0) scaleX(var(--face)) rotate(0deg); }
+  75% { transform: translateY(-3px) scaleX(var(--face)) rotate(-5deg); }
+  100% { transform: translateY(0) scaleX(var(--face)) rotate(0deg); }
+}
+
+@keyframes player-idle {
+  0%,
+  100% {
+    transform: translateY(0) scaleX(var(--face));
+  }
+  50% {
+    transform: translateY(-1px) scaleX(var(--face));
+  }
+}
+
+@keyframes player-jump {
+  0% { transform: translateY(0) scaleX(var(--face)) rotate(0deg); }
+  50% { transform: translateY(-5px) scaleX(var(--face)) rotate(10deg); }
+  100% { transform: translateY(0) scaleX(var(--face)) rotate(0deg); }
+}
+
+@keyframes enemy-walk {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.92);
+  }
+}
+
+@keyframes enemy-fly {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08, 0.94);
+  }
+}
+
+@keyframes platform-glow {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.15);
+  }
+}
